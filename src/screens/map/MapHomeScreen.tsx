@@ -1,15 +1,19 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React, { useRef } from 'react';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { BLACK, ROSE } from '@/constants/colours';
-import { MapStackParamList } from '@/navigations/stack/MapStackNavigator';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
+
+import { BLACK, ROSE, WHITE } from '@/constants/colours';
+import { MapStackParamList } from '@/navigations/stack/MapStackNavigator';
 import { MainDrawerParamList } from '@/navigations/drawer/MainDrawerNavigator';
 import useUserLocation from '@/hooks/useUserLocation';
+import usePermission from '@/hooks/usePermission';
+import googleMapStyle from '@/styles/googleMapStyle';
 
 type MapHomeNavigationProps = CompositeNavigationProp<
   StackNavigationProp<MapStackParamList>,
@@ -18,8 +22,12 @@ type MapHomeNavigationProps = CompositeNavigationProp<
 
 export default function MapHomeScreen() {
   const inset = useSafeAreaInsets();
+
   const navigation = useNavigation<MapHomeNavigationProps>();
+
   const { userLocation, isUserLocationError } = useUserLocation();
+
+  usePermission("LOCATION");
 
   const mapRef = useRef<MapView | null>(null);
 
@@ -28,7 +36,7 @@ export default function MapHomeScreen() {
     if (isUserLocationError) {
       return;
     }
-    
+
     mapRef.current?.animateToRegion({
       latitude: userLocation.latitude,
       longitude: userLocation.longitude,
@@ -44,21 +52,21 @@ export default function MapHomeScreen() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation
         followsUserLocation
-        // showsMyLocationButton={false}
+        customMapStyle={googleMapStyle}
         style={styles.container}
       />
       <Pressable
         onPress={handlePressDrawerButton}
         style={[styles.drawerButton, { top: inset.top || 20 }]}
       >
-        <Text>BTN</Text>
+        <Ionicons name='menu' color={WHITE} size={28} />
       </Pressable>
-      <View style={styles.buttonList}>
+      <View style={[styles.buttonList, { bottom: inset.bottom || 20 }]}>
         <Pressable
           onPress={handlePressUserLocation}
           style={styles.mapButton}
         >
-          <Text>My</Text>
+          <MaterialIcons name='my-location' color={WHITE} size={28} />
         </Pressable>
       </View>
     </>
@@ -72,12 +80,13 @@ const styles = StyleSheet.create({
   drawerButton: {
     position: "absolute",
     left: 0,
-    // top: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    height: 60,
+    width: 60,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: ROSE[700],
-    borderTopRightRadius: 50,
-    borderBottomRightRadius: 50,
+    borderTopRightRadius: 60,
+    borderBottomRightRadius: 60,
     shadowColor: BLACK,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
@@ -85,19 +94,18 @@ const styles = StyleSheet.create({
   },
   buttonList: {
     position: "absolute",
-    bottom: 30,
-    right: 15,
+    right: 20
   },
   mapButton: {
     backgroundColor: ROSE[700],
-    marginVertical: 5,
-    height: 48,
-    width: 48,
+    marginVertical: 4,
+    height: 60,
+    width: 60,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 30,
-    shadowOffset: { width: 1, height: 2 },
+    shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
-    elevation: 2
+    elevation: 4
   }
 });
