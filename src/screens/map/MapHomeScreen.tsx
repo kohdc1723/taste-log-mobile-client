@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import React, { useRef } from 'react';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import MapView, { Callout, LatLng, LongPressEvent, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -14,6 +14,11 @@ import { MainDrawerParamList } from '@/navigations/drawer/MainDrawerNavigator';
 import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
 import googleMapStyle from '@/styles/googleMapStyle';
+import { VANCOUVER } from '@/constants/location';
+import CustomMarker from '@/components/CustomMarker';
+import { MAP } from '@/constants/navigations';
+import MESSAGES from '@/constants/messages';
+import useGetMarkersQuery from '@/hooks/queries/useGetMarkersQuery';
 
 type MapHomeNavigationProps = CompositeNavigationProp<
   StackNavigationProp<MapStackParamList>,
@@ -27,9 +32,13 @@ export default function MapHomeScreen() {
 
   const { userLocation, isUserLocationError } = useUserLocation();
 
-  usePermission("LOCATION");
+  const [selectedLocation, setSelectedLocation] = useState<LatLng>();
 
   const mapRef = useRef<MapView | null>(null);
+
+  const { data: markers = [] } = useGetMarkersQuery();
+
+  usePermission("LOCATION");
 
   const handlePressDrawerButton = () => navigation.openDrawer();
   const handlePressUserLocation = () => {
@@ -44,6 +53,21 @@ export default function MapHomeScreen() {
       longitudeDelta: 0.0421,
     });
   };
+  const handleLongPressMapView = ({ nativeEvent }: LongPressEvent) => {
+    setSelectedLocation(nativeEvent.coordinate);
+  };
+  const handlePressAddPost = () => {
+    if (!selectedLocation) {
+      return Alert.alert(
+        MESSAGES.LOCATION_NOT_SELECTED.TITLE,
+        MESSAGES.LOCATION_NOT_SELECTED.DESCRIPTION
+      );
+    }
+
+    navigation.navigate(MAP.ADD_POST, {
+      location: selectedLocation
+    });
+  };
 
   return (
     <>
@@ -52,9 +76,27 @@ export default function MapHomeScreen() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation
         followsUserLocation
+        onLongPress={handleLongPressMapView}
         customMapStyle={googleMapStyle}
         style={styles.container}
-      />
+      >
+        {markers.map(marker => (
+          <CustomMarker
+            key={marker.id}
+            color={marker.color}
+            rating={marker.score}
+            coordinate={{
+              latitude: marker.latitude,
+              longitude: marker.longitude
+            }}
+          />
+        ))}
+        {selectedLocation && (
+          <Callout>
+            <CustomMarker color={"RED"} coordinate={selectedLocation} />
+          </Callout>
+        )}
+      </MapView>
       <Pressable
         onPress={handlePressDrawerButton}
         style={[styles.drawerButton, { top: inset.top || 20 }]}
@@ -62,6 +104,12 @@ export default function MapHomeScreen() {
         <Ionicons name='menu' color={WHITE} size={28} />
       </Pressable>
       <View style={[styles.buttonList, { bottom: inset.bottom || 20 }]}>
+        <Pressable
+          onPress={handlePressAddPost}
+          style={styles.mapButton}
+        >
+          <MaterialIcons name='add' color={WHITE} size={28} />
+        </Pressable>
         <Pressable
           onPress={handlePressUserLocation}
           style={styles.mapButton}

@@ -4,9 +4,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import CustomInputField from '@/components/CustomTextInput';
+import CustomTextInput from '@/components/CustomTextInput';
 import CustomPressable from '@/components/CustomPressable';
-import useAuth from '@/hooks/useAuth';
+import useAuth from '@/hooks/queries/useAuth';
 
 type LoginData = {
   email: string;
@@ -39,7 +39,7 @@ export default function LoginScreen() {
           control={control}
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInputField
+            <CustomTextInput
               autoFocus
               placeholder="Email"
               onChangeText={onChange}
@@ -57,7 +57,7 @@ export default function LoginScreen() {
           control={control}
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <CustomInputField
+            <CustomTextInput
               ref={passwordRef}
               placeholder="Password"
               onChangeText={onChange}

@@ -1,8 +1,8 @@
 import { Category, Profile } from "@/types/domains";
 import { getEncrytedStorage } from "@/utils/encryptedStorage";
-import { axiosInstance as axios } from "@/api/axios";
+import { axiosInstance } from "@/api/axios";
 
-type UserRequest = {
+type RequestUser = {
   email: string;
   password: string;
 };
@@ -14,8 +14,8 @@ type ResponseToken = {
 
 type ResponseProfile = Profile & Category;
 
-const signUp = async ({ email, password }: UserRequest): Promise<void> => {
-  const { data } = await axios.post("/auth/signup", {
+const signUp = async ({ email, password }: RequestUser): Promise<void> => {
+  const { data } = await axiosInstance.post("/auth/signup", {
     email,
     password
   });
@@ -23,8 +23,8 @@ const signUp = async ({ email, password }: UserRequest): Promise<void> => {
   return data;
 };
 
-const signIn = async ({ email, password }: UserRequest): Promise<ResponseToken> => {
-  const { data } = await axios.post("/auth/signin", {
+const signIn = async ({ email, password }: RequestUser): Promise<ResponseToken> => {
+  const { data } = await axiosInstance.post("/auth/signin", {
     email,
     password
   });
@@ -33,7 +33,7 @@ const signIn = async ({ email, password }: UserRequest): Promise<ResponseToken> 
 };
 
 const getProfile = async (): Promise<ResponseProfile> => {
-  const { data } = await axios.get("/auth/me");
+  const { data } = await axiosInstance.get("/auth/me");
 
   return data;
 };
@@ -41,7 +41,7 @@ const getProfile = async (): Promise<ResponseProfile> => {
 const getAccessToken = async (): Promise<ResponseToken> => {
   const refreshToken = await getEncrytedStorage("refreshToken");
 
-  const { data } = await axios.get("/auth/refresh", {
+  const { data } = await axiosInstance.get("/auth/refresh", {
     headers: {
       Authorization: `Bearer ${refreshToken}`
     }
@@ -51,7 +51,7 @@ const getAccessToken = async (): Promise<ResponseToken> => {
 };
 
 const signOut = async () => {
-  await axios.post("/auth/logout");
+  await axiosInstance.post("/auth/logout");
 };
 
 export {
@@ -63,7 +63,7 @@ export {
 };
 
 export type {
-  UserRequest,
+  RequestUser,
   ResponseToken,
   ResponseProfile
 };

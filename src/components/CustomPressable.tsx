@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions
 } from 'react-native';
+
 import { ROSE, WHITE } from '@/constants/colours';
 
 interface CustomPressableProps extends PressableProps {

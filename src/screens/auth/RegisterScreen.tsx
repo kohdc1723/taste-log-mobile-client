@@ -1,12 +1,12 @@
 import { View, SafeAreaView, StyleSheet, TextInput } from 'react-native';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import CustomInputField from '@/components/CustomTextInput';
 import CustomPressable from '@/components/CustomPressable';
-import useAuth from '@/hooks/useAuth';
+import useAuth from '@/hooks/queries/useAuth';
 
 type RegisterData = {
   email: string;
@@ -21,10 +21,6 @@ const RegisterSchema = yup.object({
   password: yup.string()
     .required("Password is required")
     .min(8, 'Password must be at least 8 characters long'),
-    // .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    // .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    // .matches(/\d/, 'Password must contain at least one number')
-    // .matches(/[@$!%*?&]/, 'Password must contain at least one special character'),
   confirmPassword: yup.string()
     .required("Confirm password is required")
     .oneOf([yup.ref("password")], "Passwords must match")

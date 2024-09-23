@@ -3,9 +3,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { MAP } from '@/constants/navigations';
 import MapHomeScreen from '@/screens/map/MapHomeScreen';
+import AddPostScreen from '@/screens/map/AddPostScreen';
+import { LatLng } from 'react-native-maps';
 
 export type MapStackParamList = {
   [MAP.HOME]: undefined;
+  [MAP.ADD_POST]: { location: LatLng };
 };
 
 const Stack = createStackNavigator<MapStackParamList>();
@@ -20,9 +23,9 @@ export default function MapStackNavigator() {
         backgroundColor: "white",
         shadowColor: "gray"
       },
-      // headerTitleStyle: {
-      //   fontSize: 15
-      // },
+      headerTitleStyle: {
+        fontSize: 15
+      },
       headerTintColor: "black"
     }}>
       <Stack.Screen
@@ -31,6 +34,13 @@ export default function MapStackNavigator() {
         options={{
           headerTitle: "",
           headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name={MAP.ADD_POST}
+        component={AddPostScreen}
+        options={{
+          headerTitle: "Add Post"
         }}
       />
     </Stack.Navigator>

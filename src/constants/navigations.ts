@@ -5,7 +5,8 @@ export const AUTH = {
 } as const;
 
 export const MAP = {
-  HOME: "MapHome"
+  HOME: "MapHome",
+  ADD_POST: "AddPost"
 } as const;
 
 export const MAIN = {

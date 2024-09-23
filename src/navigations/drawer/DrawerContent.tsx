@@ -1,11 +1,13 @@
 import { BLACK, NEUTRAL, ROSE, WHITE } from "@/constants/colours";
-import useAuth from "@/hooks/useAuth";
+import useAuth from "@/hooks/queries/useAuth";
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
-import { StyleSheet, View, Text, SafeAreaView, Image } from "react-native";
+import { StyleSheet, View, Text, SafeAreaView, Image, Pressable } from "react-native";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
-  const { getProfileQuery } = useAuth();
+  const { getProfileQuery, logoutMutation } = useAuth();
   const { email, nickname, imageUri, kakaoImageUri } = getProfileQuery.data || {};
+
+  const handleLogout = () => logoutMutation.mutate(null);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,6 +43,12 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           <DrawerItemList {...props} />
         </View>
       </DrawerContentScrollView>
+      <Pressable
+        onPress={handleLogout}
+        style={{ padding: 10, alignItems: "flex-end" }}
+      >
+        <Text>Logout</Text>
+      </Pressable>
     </SafeAreaView>
   );
 };
